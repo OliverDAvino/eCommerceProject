@@ -70,7 +70,7 @@
         <div class="form-group">
             <label for="image">Photo</label>
             {% if pet and pet.image %}
-                <img src="{{ pet.image }}" alt="Current photo" class="current-image-preview">
+                <img src="{{ base_path ~ pet.image }}" alt="Current photo" class="current-image-preview">
             {% endif %}
             <input type="file" id="image" name="image" accept="image/*">
         </div>

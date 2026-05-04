@@ -58,7 +58,7 @@
             <div class="pet-grid pet-grid--centered">
                 {% for record in history %}
                     <article class="pet-card pet-card--adopted">
-                        <img src="{{ record.pet.image ? base_path ~ record.pet.image : base_path ~ '/Assets/img/default-pet.jpg' }}" alt="{{ record.pet.name }}" class="pet-card__img">
+                        <img src="{{ record.pet.image ? base_path ~ record.pet.image : base_path ~ '/Assets/images/default-pet.svg' }}" alt="{{ record.pet.name }}" class="pet-card__img">
                         <div class="pet-card__body">
                             <span class="badge badge--adopted">Adopted</span>
                             <h3 class="pet-card__name">{{ record.pet.name }}</h3>

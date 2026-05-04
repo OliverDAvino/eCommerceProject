@@ -169,3 +169,21 @@
 </div>
 
 <script src="{{ base_path }}/Assets/chat.js"></script>
+<script>
+(function () {
+    var fab = document.getElementById('chatFab');
+    var win = document.getElementById('chatWindow');
+    var footer = document.querySelector('.footer');
+    if (!fab || !footer) return;
+    function adjustChatPos() {
+        var footerTop = footer.getBoundingClientRect().top;
+        var visibleFooter = Math.max(0, window.innerHeight - footerTop);
+        var gap = 24;
+        fab.style.bottom = (visibleFooter + gap) + 'px';
+        if (win) win.style.bottom = (visibleFooter + gap + 68) + 'px';
+    }
+    window.addEventListener('scroll', adjustChatPos, { passive: true });
+    window.addEventListener('resize', adjustChatPos, { passive: true });
+    adjustChatPos();
+})();
+</script>

@@ -53,7 +53,7 @@
         {% if session.user_id is defined and session.user_id %}
             <li><a href="{{ base_path }}/adoptions" data-nav="/adoptions">{{ translations['nav.my_adoptions']|default('My Adoptions') }}</a></li>
             {% if session.user_role == 'admin' %}
-                <li><a href="{{ base_path }}/admin" class="btn btn--admin btn--sm" data-nav="/admin">{{ translations['nav.admin']|default('Admin') }}</a></li>
+                <li><a href="{{ base_path }}/admin" class="btn btn--admin btn--sm" data-nav="/admin">⚙ {{ translations['nav.admin']|default('Dashboard') }}</a></li>
             {% endif %}
             <li class="navbar__user">
                 <a href="{{ base_path }}/profile" class="navbar__profile" data-nav="/profile" title="{{ translations['nav.profile']|default('My Profile') }}">

@@ -4,7 +4,7 @@
 {% block content %}
 <div class="form-page">
     <div class="adopt-header">
-        <img src="{{ pet.image ? base_path ~ pet.image : base_path ~ '/Assets/img/default-pet.jpg' }}" alt="{{ pet.name }}" class="adopt-header__img">
+        <img src="{{ pet.image ? base_path ~ pet.image : base_path ~ '/Assets/images/default-pet.svg' }}" alt="{{ pet.name }}" class="adopt-header__img">
         <div>
             <h1>{{ translations['adoption_apply.title']|default('Adopt') }} {{ pet.name }}</h1>
             <p>{{ pet.breed }} · {{ pet.age }} {{ translations['pet_detail.years']|default('yrs') }} · {{ pet.location }}</p>

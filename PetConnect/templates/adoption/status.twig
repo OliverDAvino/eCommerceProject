@@ -7,7 +7,7 @@
 
     <div class="status-card">
         <div class="status-card__pet">
-            <img src="{{ request.pet.image ?? '/img/default-pet.jpg' }}" alt="{{ request.pet.name }}">
+            <img src="{{ request.pet.image ? base_path ~ request.pet.image : base_path ~ '/Assets/images/default-pet.svg' }}" alt="{{ request.pet.name }}">
             <div>
                 <h2>{{ request.pet.name }}</h2>
                 <p>{{ request.pet.breed }} · {{ request.pet.age }} {{ translations['pet_detail.years']|default('yrs') }}</p>
