@@ -76,7 +76,6 @@ PROMPT;
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $apiKey,
             ],
-            CURLOPT_SSL_VERIFYPEER => false, // dev-only: WAMP lacks a CA bundle
         ]);
 
         $raw      = curl_exec($ch);
