@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y \
         fileinfo \
         gd \
     && a2enmod rewrite \
+    && a2dismod mpm_event mpm_worker || true \
+    && a2enmod mpm_prefork \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
