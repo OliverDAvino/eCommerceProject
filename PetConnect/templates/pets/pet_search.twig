@@ -11,7 +11,7 @@
         {% for pet in pets %}
             <article class="pet-card">
                 <a href="{{ base_path }}/pets/{{ pet.id }}">
-                    <img src="{{ pet.image ?? '/img/default-pet.jpg' }}" alt="{{ pet.name }}">
+                    <img src="{{ pet.image ? base_path ~ pet.image : base_path ~ '/Assets/images/default-pet.svg' }}" alt="{{ pet.name }}" class="pet-card__img">
                     <div class="pet-card__body">
                         <h2>{{ pet.name }}</h2>
                         <p>{{ pet.breed }} · {{ pet.age }} {{ translations['pet_detail.years']|default('yrs') }}</p>

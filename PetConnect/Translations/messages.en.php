@@ -15,7 +15,7 @@ return [
     'nav.donate' => 'Donate',
     'nav.faq' => 'FAQ',
     'nav.my_adoptions' => 'My Adoptions',
-    'nav.admin' => 'Admin',
+    'nav.admin' => 'Dashboard',
     'nav.login' => 'Login',
     'nav.register' => 'Register',
     'nav.logout' => 'Logout',
