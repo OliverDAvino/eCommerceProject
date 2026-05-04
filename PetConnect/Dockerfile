@@ -1,6 +1,5 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-# Install all system libraries and PHP extensions the app needs
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     libssl-dev \
@@ -22,22 +21,25 @@ RUN apt-get update && apt-get install -y \
         intl \
         fileinfo \
         gd \
+    && a2enmod rewrite \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /app
+WORKDIR /var/www/html
 
-# Copy all project files
 COPY . .
 
-# Install PHP dependencies (allow root, no dev packages, optimised autoloader)
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
-# Create the router script so PHP built-in server handles static files correctly
-RUN echo '<?php if (php_sapi_name() === "cli-server") { $url = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH); if ($url !== "/" && is_file(__DIR__ . $url)) { return false; } } require __DIR__ . "/index.php";' > /app/router.php
+# Allow .htaccess overrides for Slim routing
+RUN echo '<Directory /var/www/html>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' > /etc/apache2/conf-available/app.conf \
+    && a2enconf app
 
-# Start PHP built-in server on Railway's dynamic port
-CMD php -S 0.0.0.0:$PORT /app/router.php
+# Railway injects $PORT dynamically — patch Apache to listen on it at startup
+CMD sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf \
+    && sed -i "s/*:80>/*:${PORT}>/" /etc/apache2/sites-available/000-default.conf \
+    && apache2-foreground
