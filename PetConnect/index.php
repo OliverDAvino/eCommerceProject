@@ -128,10 +128,12 @@ $app->get('/seed', function (Request $request, Response $response) use ($basePat
         $response->getBody()->write('<h1>403 Forbidden</h1>');
         return $response->withStatus(403);
     }
+    R::exec('SET FOREIGN_KEY_CHECKS=0');
     R::wipe('adoptionhistory');
     R::wipe('adoptionrequest');
     R::wipe('pet');
     R::wipe('category');
+    R::exec('SET FOREIGN_KEY_CHECKS=1');
 
     $categories = ['Dog', 'Cat', 'Bird', 'Rabbit'];
     $catIds     = [];
