@@ -4,6 +4,7 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     libssl-dev \
+    libonig-dev \
     && docker-php-ext-install pdo pdo_mysql curl mbstring \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
