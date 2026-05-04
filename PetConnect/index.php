@@ -3,12 +3,16 @@
 require __DIR__ . '/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+$dotenv->safeLoad(); // safeLoad() skips missing .env files (e.g. on Railway where vars are injected directly)
+
+$isSecure = isset($_SERVER['HTTPS'])
+    || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'
+    || ($_ENV['APP_ENV'] ?? '') === 'production';
 
 session_set_cookie_params([
     'lifetime' => 0,
     'path'     => '/',
-    'secure'   => isset($_SERVER['HTTPS']),
+    'secure'   => $isSecure,
     'httponly' => true,
     'samesite' => 'Strict',
 ]);
@@ -53,7 +57,13 @@ if ($_ENV['APP_ENV'] === 'production') {
 }
 
 // ── 2. BASE PATH ──────────────────────────────────────────────────────────────
-$basePath = rtrim(str_ireplace('index.php', '', $_SERVER['SCRIPT_NAME']), '/');
+// On Railway (php -S with router.php) or any production host at the domain root,
+// SCRIPT_NAME is not a reliable sub-path indicator — force empty string.
+if (php_sapi_name() === 'cli-server' || ($_ENV['APP_ENV'] ?? '') === 'production') {
+    $basePath = '';
+} else {
+    $basePath = rtrim(str_ireplace('index.php', '', $_SERVER['SCRIPT_NAME']), '/');
+}
 
 // ── 3. TWIG ───────────────────────────────────────────────────────────────────
 $twig = Twig::create(__DIR__ . '/templates', ['cache' => false]);
@@ -84,7 +94,8 @@ $app->add(new FlashMiddleware($twig));
 $app->add(new MaintenanceMiddleware($app->getResponseFactory(), $twig, $basePath));
 $app->add(new SecurityHeaderMiddleware());
 
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$isProd = ($_ENV['APP_ENV'] ?? '') === 'production';
+$errorMiddleware = $app->addErrorMiddleware(!$isProd, true, !$isProd);
 
 //redirect to 404 page if route not found**
 $errorMiddleware->setErrorHandler(
@@ -109,7 +120,14 @@ $app->get('/lang/{locale}', function (Request $request, Response $response, arra
 });
 
 // ── 8. SEED ROUTE ─────────────────────────────────────────────────────────────
+// Requires ?token=SEED_TOKEN env var to prevent accidental DB wipe in production
 $app->get('/seed', function (Request $request, Response $response) use ($basePath): Response {
+    $expected = $_ENV['SEED_TOKEN'] ?? '';
+    $provided = $request->getQueryParams()['token'] ?? '';
+    if ($expected === '' || !hash_equals($expected, $provided)) {
+        $response->getBody()->write('<h1>403 Forbidden</h1>');
+        return $response->withStatus(403);
+    }
     R::wipe('adoptionhistory');
     R::wipe('adoptionrequest');
     R::wipe('pet');
