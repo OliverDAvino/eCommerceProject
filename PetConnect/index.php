@@ -47,10 +47,10 @@ use App\I18n\I18n;
 
 // ── 1. DATABASE ───────────────────────────────────────────────────────────────
 $dsn = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4',
-    $_ENV['DB_HOST'],
-    $_ENV['DB_NAME']
+    $_ENV['DB_HOST'] ?? '',
+    $_ENV['DB_NAME'] ?? ''
 );
-R::setup($dsn, $_ENV['DB_USER'], $_ENV['DB_PASS']);
+R::setup($dsn, $_ENV['DB_USER'] ?? '', $_ENV['DB_PASS'] ?? '');
 
 if ($_ENV['APP_ENV'] === 'production') {
     R::freeze(true);

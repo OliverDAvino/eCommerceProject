@@ -31,7 +31,8 @@ COPY . .
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
-RUN echo '<?php if (php_sapi_name() === "cli-server") { $url = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH); if ($url !== "/" && is_file(__DIR__ . $url)) { return false; } } require __DIR__ . "/index.php";' > /app/router.php
+RUN php -l index.php
 
-# PHP_CLI_SERVER_WORKERS runs multiple worker processes to handle concurrent requests
-CMD php -S 0.0.0.0:$PORT /app/router.php
+RUN printf '<?php\nif (php_sapi_name() === "cli-server") { $url = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH); if ($url !== "/" && is_file(__DIR__ . $url)) { return false; } }\ntry { require __DIR__ . "/index.php"; } catch (Throwable $e) { http_response_code(500); echo $e->getMessage() . "\n" . $e->getTraceAsString(); }\n' > /app/router.php
+
+CMD php -S 0.0.0.0:$PORT /app/router.php 2>&1
