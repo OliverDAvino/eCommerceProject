@@ -5,7 +5,16 @@
 {% block content %}
 <div class="pet-detail">
     <div class="pet-detail__gallery">
-        <img src="{{ pet.image ? base_path ~ pet.image : base_path ~ '/Assets/images/default-pet.svg' }}" alt="{{ pet.name }}">
+        {% set _counts = {'dog': 4, 'cat': 4, 'rabbit': 4, 'bird': 3} %}
+        {% set _species = pet.species|lower %}
+        {% if pet.image %}
+            {% set _pet_img = base_path ~ pet.image %}
+        {% elseif _counts[_species] is defined %}
+            {% set _pet_img = base_path ~ '/Assets/images/' ~ _species ~ ((pet.id % _counts[_species]) + 1) ~ '.jpg' %}
+        {% else %}
+            {% set _pet_img = base_path ~ '/Assets/images/default-pet.svg' %}
+        {% endif %}
+        <img src="{{ _pet_img }}" alt="{{ pet.name }}">
     </div>
 
     <div class="pet-detail__info">
