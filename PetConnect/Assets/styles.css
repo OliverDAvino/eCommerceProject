@@ -346,10 +346,18 @@ img.navbar__avatar { object-fit: cover; display: block; }
 
 .pet-grid{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 1.5rem;
     width: 100%;
+}
+
+/* Forces cards to stretch equally across the full container width */
+.pet-grid--full {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+}
+@media (max-width: 600px) {
+    .pet-grid--full { grid-template-columns: 1fr; }
 }
 
 .pet-card{
@@ -1287,4 +1295,88 @@ img.navbar__avatar { object-fit: cover; display: block; }
     .faq-card {
         padding: 1.5rem;
     }
+}
+
+/* ── FLUID / RESPONSIVE OVERRIDES ───────────────────────────────────────────
+   All layouts scale with viewport width — no hiding, no hamburgers.
+   clamp() values: clamp(min, preferred, max)                               */
+
+/* Navbar wraps gracefully on narrow viewports */
+.navbar {
+    flex-wrap: wrap;
+    gap: .5rem .75rem;
+    padding: .75rem clamp(.75rem, 3vw, 2rem);
+}
+.navbar__search { min-width: 140px; }
+.navbar__links  { flex-wrap: wrap; gap: .25rem; }
+.navbar__links > li > a { font-size: clamp(.75rem, 1.4vw, .92rem); padding: .45rem clamp(.35rem, 1vw, .9rem); }
+.navbar__username { max-width: clamp(80px, 12vw, 160px); }
+
+/* Container scales between 1rem padding on phones and 3rem on wide screens */
+.container { padding: 0 clamp(1rem, 4vw, 3rem) 2rem; }
+
+/* Pet grid: auto-fill so cards never get smushed — they wrap instead */
+.pet-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: clamp(1rem, 2vw, 2rem);
+}
+
+/* Two-column detail collapses when narrow */
+.pet-detail { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+
+/* Forms */
+.form-row { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* Admin sidebar stacks when viewport is narrow */
+.admin-layout { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: start; }
+.admin-sidebar { height: auto; }
+
+/* Footer grid collapses fluidly */
+.footer { padding: 2.5rem clamp(1rem, 4vw, 3rem) 0; }
+.footer__grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.footer__bottom { margin: 0 clamp(-1rem, -4vw, -3rem); }
+
+/* About/Donate/FAQ pages: replace fixed 3rem margins with fluid ones */
+.about-breadcrumb  { padding: 1.5rem clamp(1rem, 4vw, 3rem); }
+.about-hero        { margin: 0 clamp(.5rem, 3vw, 3rem) 2rem; }
+.about-two-columns { margin: 0 clamp(.5rem, 3vw, 3rem) 2rem; }
+.about-values      { margin: 0 clamp(.5rem, 3vw, 3rem) 2rem; }
+.about-team        { margin: 0 clamp(.5rem, 3vw, 3rem) 3rem; }
+.about-impact      { margin: 3rem clamp(.5rem, 3vw, 3rem); }
+.donate-breadcrumb { padding: 1.5rem clamp(1rem, 4vw, 3rem); }
+.donate-page       { padding: 2rem clamp(1rem, 4vw, 3rem); }
+.faq-breadcrumb    { padding: 1.5rem clamp(1rem, 4vw, 3rem); }
+.contact-page      { padding: 2rem clamp(1rem, 4vw, 3rem); }
+
+/* Tables scroll horizontally when content is wider than the viewport */
+.data-table-wrap,
+.adoptions-table-wrap { overflow-x: auto; }
+
+/* Status details stacks when narrow */
+.status-details { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+
+/* Maintenance / error images fit their container */
+.maintenance-card__img,
+.error-card__img { width: min(575px, 100%); height: auto; }
+
+/* Stats row: 3-up on wide, 2-up mid, 1-up narrow */
+.stats-row { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+
+/* Hero heading scales with viewport */
+.hero-home h1 { font-size: clamp(1.8rem, 5vw, 3.2rem); }
+.hero-home__image  { width: clamp(180px, 30vw, 280px); height: clamp(180px, 30vw, 280px); }
+.hero-home__circle { width: clamp(200px, 32vw, 280px); height: clamp(200px, 32vw, 280px); }
+
+/* Values / impact grids */
+.values-grid  { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.impact-grid  { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.amount-grid  { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+.donate-row   { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+/* Modal actions stack on very narrow viewports */
+@media (max-width: 420px) {
+    .modal-card__actions { flex-direction: column; }
+    .modal-card__actions .btn { width: 100%; }
+    .form-actions { flex-direction: column; }
+    .theme-picker { grid-template-columns: 1fr 1fr; }
 }
