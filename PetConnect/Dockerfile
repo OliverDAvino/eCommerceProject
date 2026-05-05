@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
@@ -23,29 +23,15 @@ RUN apt-get update && apt-get install -y \
         gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Force mpm_prefork (required for mod_php) — remove conflicting MPM symlinks
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.conf \
-          /etc/apache2/mods-enabled/mpm_event.load \
-          /etc/apache2/mods-enabled/mpm_worker.conf \
-          /etc/apache2/mods-enabled/mpm_worker.load \
-    && a2enmod mpm_prefork rewrite
-
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /app
 
 COPY . .
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
-# Allow .htaccess overrides for Slim routing
-RUN echo '<Directory /var/www/html>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' > /etc/apache2/conf-available/app.conf \
-    && a2enconf app
+RUN echo '<?php if (php_sapi_name() === "cli-server") { $url = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH); if ($url !== "/" && is_file(__DIR__ . $url)) { return false; } } require __DIR__ . "/index.php";' > /app/router.php
 
-# Railway sets $PORT dynamically — patch Apache to listen on it at startup
-CMD sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf \
-    && sed -i "s/*:80>/*:${PORT}>/" /etc/apache2/sites-available/000-default.conf \
-    && apache2-foreground
+# PHP_CLI_SERVER_WORKERS runs multiple worker processes to handle concurrent requests
+CMD php -S 0.0.0.0:$PORT /app/router.php
