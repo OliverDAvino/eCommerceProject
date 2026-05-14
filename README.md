@@ -74,7 +74,7 @@ PetConnect/
 - MySQL (MariaDB)
 - A web server with `mod_rewrite` enabled (Apache/WAMPOON)
 
-### Local Setup (WAMP / Apache)
+### Local Setup (WAMPOON / Apache)
 
 1. **Clone the repository**
 
